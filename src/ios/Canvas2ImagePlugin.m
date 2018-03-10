@@ -25,7 +25,7 @@
                || [[extension lowercaseString] isEqualToString:@"jpg"] || [[extension lowercaseString] isEqualToString:@"jpeg"]) {
         [UIImageJPEGRepresentation(image, quality) writeToFile:[directoryPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.%@", imageName, @"jpg"]] options:NSAtomicWrite error:nil];
     } else {
-        ALog(@"Image Save Failed\nExtension: (%@) is not recognized, use (PNG/JPG)", extension);
+        NSLog(@"Image Save Failed\nExtension: (%@) is not recognized, use (PNG/JPG)", extension);
     }
 }
 
@@ -38,9 +38,12 @@
     NSString *dateString = [dateFormatter stringFromDate:date];
 
     self.latestCommand = command;
-    NSData* imageData = [NSData dataFromBase64String:[command.arguments objectAtIndex:0]];
-    
+    //NSData* imageData = [NSData dataFromBase64String:[command.arguments objectAtIndex:0]];
+    //UIImage* image = [[[UIImage alloc] initWithData:imageData] autorelease];
+    NSData *imageData = [[NSData alloc]initWithBase64EncodedString:[command.arguments objectAtIndex:0] options:NSDataBase64DecodingIgnoreUnknownCharacters];
     UIImage* image = [[[UIImage alloc] initWithData:imageData] autorelease];
+    
+    
 
     NSString * path = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     NSString *temp = @"ImageFile-";
@@ -76,8 +79,8 @@
     {
         // Show message image successfully saved
         NSLog(@"IMAGE SAVED!");
-        //CDVPluginResult* result = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK messageAsString:@"Image saved"];
-        //[self.commandDelegate sendPluginResult:result callbackId:self.latestCommand.callbackId];
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK messageAsString:@"Image saved"];
+        [self.commandDelegate sendPluginResult:result callbackId:self.latestCommand.callbackId];
     }
 }
 
